@@ -59,7 +59,7 @@ Order Service
      ├── DTO
      └── Database
 
-# 🔗 Communication Between Services
+# Communication Between Services
 
 The **Order Service** may need user information when processing an order.
 
