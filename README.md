@@ -1,11 +1,11 @@
 # Microservices-guided-learning
 # Microservices Architecture: User Service and Order Service
-## 📌 Project Overview
+## Project Overview
 This project is developed using **Microservices Architecture** with two independent services:
 1. **User Service**
 2. **Order Service**
 Each service is responsible for a specific business capability and can be developed, deployed, and scaled independently
-# 🏗️ Architecture
+# Architecture
                     Client
                       │
                       ▼
@@ -20,7 +20,7 @@ Each service is responsible for a specific business capability and can be develo
               │  Order Service │
               └────────────────┘
 The application is divided into two services with clear responsibilities and boundaries.
-# 👤 User Service
+# User Service
 ## Responsibility
 The **User Service** is responsible for managing user-related operations.
 Its responsibilities may include:
@@ -39,7 +39,7 @@ User Service
      ├── Entity
      ├── DTO
      └── Database
-# 📦 Order Service
+#Order Service
 ## Responsibility
 The **Order Service** is responsible for managing order-related operations.
 Its responsibilities may include:
@@ -82,7 +82,7 @@ User Service
       ▼
 User Database
 This keeps the services independent.
-# 🧱 Service Boundaries
+#  Service Boundaries
 A service boundary defines what responsibility belongs to each microservice.
 ## User Service Boundary
 The User Service is responsible only for user-related functionality.
@@ -102,7 +102,7 @@ Order Service
 ✓ Cancel Order
 ✓ Manage Order Status
 The Order Service should not manage user authentication or user profile logic.
-# 🗄️ Database Boundaries
+# Database Boundaries
 In a microservices architecture, each service should ideally manage its own database.
 User Service
      │
@@ -131,7 +131,7 @@ User Service
       ▼
 User Database
 This principle is called **Database Per Service**.
-# 🏢 Monolithic Architecture
+#  Monolithic Architecture
 
 In a **Monolithic Architecture**, all modules are developed and deployed as a single application.
 For example
@@ -143,7 +143,7 @@ Application
 ├── Service
 └── Database
 All components run together as one application.
-# 🚀 Microservices Architecture
+# Microservices Architecture
 
 In this project, the application is divided into separate services.
 Microservices System
@@ -155,7 +155,7 @@ Microservices System
        └── Order Database
 Each service is independent and focuses on a specific business responsibility.
 
-# ⚖️ Monolithic vs Microservices
+# Monolithic vs Microservices
 
 | Feature         | Monolithic Architecture  | Microservices Architecture                 |
 | --------------- | ------------------------ | ------------------------------------------ |
@@ -168,7 +168,7 @@ Each service is independent and focuses on a specific business responsibility.
 | Complexity      | Lower                    | Higher                                     |
 | Fault Isolation | Limited                  | Better isolation                           |
 
-# ✅ Benefits of Microservices
+# Benefits of Microservices
 
 ## 1. Independent Development
 
@@ -199,7 +199,7 @@ User Service  → User Management
 
 Order Service → Order Management
 This makes the system easier to organize as the application grows.
-# ⚠️ Microservices Trade-Offs
+#  Microservices Trade-Offs
 
 Microservices also introduce additional complexity.
 
@@ -216,16 +216,10 @@ Network problems can cause:
 * Timeouts
 * Connection failures
 * Service unavailability
-
----
-
 ## 2. Distributed System Complexity
-
 Unlike a monolithic application, multiple applications must be managed.
 
 For example:
-
-```text
 User Service
      │
      ├── Configuration
@@ -238,23 +232,12 @@ Order Service
      ├── Configuration
      ├── Deployment
      └── Database
-```
-
----
 
 ## 3. Data Consistency
-
 Each service manages its own data.
-
 Therefore, maintaining consistency between services can be more challenging than using a single shared database.
-
----
-
 ## 4. Debugging Complexity
-
 A request may travel between multiple services.
-
-```text
 Client
    │
    ▼
@@ -262,35 +245,20 @@ Order Service
    │
    ▼
 User Service
-```
-
 Debugging requires tracking requests across services.
-
----
-
-# 🎯 Why Microservices Were Used
-
+# Why Microservices Were Used
 The application was divided into **User Service** and **Order Service** to demonstrate:
-
 * Separation of responsibilities
 * Independent services
 * Clear service boundaries
 * Service-to-service communication
 * Independent deployment
 * Independent scalability
-
----
-
-# 🏁 Conclusion
-
+# Conclusion
 This project demonstrates a simple Microservices Architecture consisting of two independent services:
-
-```text
 User Service
       +
 Order Service
-```
-
 The **User Service** is responsible for user-related functionality, while the **Order Service** is responsible for order-related functionality.
 
 This separation creates clear business boundaries and allows each service to evolve independently.
