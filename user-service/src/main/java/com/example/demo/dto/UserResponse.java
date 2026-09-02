@@ -1,44 +1,41 @@
 package com.example.demo.dto;
 
 public class UserResponse {
-	private int id;
-	private String Name;
-	private String Email;
-	
-	public UserResponse() {
-		
-	}
-	
-	public UserResponse(int id,String Name,String Email) {
-		this.id=id;
-		this.Name=Name;
-		this.Email=Email;
-	}
 
-	public int getId() {
-		return id;
-	}
+    private int id;
+    private String name;
+    private String email;
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public UserResponse() {
+    }
 
-	public String getName() {
-		return Name;
-	}
+    public UserResponse(int id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
 
-	public void setName(String name) {
-		Name = name;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String getEmail() {
-		return Email;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setEmail(String email) {
-		Email = email;
-	}
-	
-	
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

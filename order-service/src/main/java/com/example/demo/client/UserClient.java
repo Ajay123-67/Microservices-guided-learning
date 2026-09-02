@@ -1,22 +1,45 @@
 package com.example.demo.client;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 
 import com.example.demo.dto.UserResponse;
+import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.exception.UserServiceUnavailableException;
 
 @Component
 public class UserClient {
-	
-	private final RestClient restclient;
-	public UserClient(RestClient.Builder builder) {
-		this.restclient=builder.baseUrl("http://localhost:8081").build();
-		
-	}
-	
-	public UserResponse getUserById(int userId) {
-		return restclient.get().uri("/users/{id}",userId).retrieve().body(UserResponse.class);
-	}
-	
 
+    private final RestClient restClient;
+
+    public UserClient(RestClient.Builder builder) {
+        this.restClient = builder
+                .baseUrl("http://localhost:8081")
+                .build();
+    }
+
+    public UserResponse getUserById(int userId) {
+
+        try {
+
+            return restClient.get()
+                    .uri("/users/{id}", userId)
+                    .retrieve()
+                    .onStatus(
+                            status -> status.value() == 404,
+                            (request, response) -> {
+                                throw new UserNotFoundException(
+                                        "User with id " + userId + " not found");
+                            }
+                    )
+                    .body(UserResponse.class);
+
+        } catch (ResourceAccessException ex) {
+
+            throw new UserServiceUnavailableException(
+                    "User Service is currently unavailable. Please try again later."
+            );
+        }
+    }
 }
