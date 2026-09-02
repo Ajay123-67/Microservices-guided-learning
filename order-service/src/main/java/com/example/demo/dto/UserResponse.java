@@ -13,8 +13,8 @@ public class UserResponse {
 	public UserResponse(int id, String name, String email) {
 		super();
 		this.id = id;
-		name = name;
-		email = email;
+		this.name = name;
+		this.email = email;
 	}
 
 	public int getId() {
@@ -30,7 +30,7 @@ public class UserResponse {
 	}
 
 	public void setName(String name) {
-		name = name;
+		this.name = name;
 	}
 
 	public String getEmail() {
@@ -38,7 +38,7 @@ public class UserResponse {
 	}
 
 	public void setEmail(String email) {
-		email = email;
+		this.email = email;
 	}
 	
 	
