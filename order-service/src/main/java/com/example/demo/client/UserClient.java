@@ -1,5 +1,6 @@
 package com.example.demo.client;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
@@ -13,9 +14,12 @@ public class UserClient {
 
     private final RestClient restClient;
 
-    public UserClient(RestClient.Builder builder) {
+    public UserClient(
+            RestClient.Builder builder,
+            @Value("${user.service.url}") String userServiceUrl) {
+
         this.restClient = builder
-                .baseUrl("http://localhost:8081")
+                .baseUrl(userServiceUrl)
                 .build();
     }
 
@@ -31,6 +35,13 @@ public class UserClient {
                             (request, response) -> {
                                 throw new UserNotFoundException(
                                         "User with id " + userId + " not found");
+                            }
+                    )
+                    .onStatus(
+                            status -> status.is5xxServerError(),
+                            (request, response) -> {
+                                throw new UserServiceUnavailableException(
+                                        "User Service encountered an internal error.");
                             }
                     )
                     .body(UserResponse.class);

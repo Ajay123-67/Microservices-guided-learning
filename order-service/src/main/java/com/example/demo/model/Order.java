@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-public class order {
+public class Order {
 	
 	private int  id;
 	private int userId;
@@ -8,10 +8,10 @@ public class order {
 	private int quality;
 	private double price;
 	
-	public order() {
+	public Order() {
 		
 	}
-	public order(int id, int userId, String productName, int quality, double price) {
+	public Order(int id, int userId, String productName, int quality, double price) {
 		super();
 		this.id = id;
 		this.userId = userId;

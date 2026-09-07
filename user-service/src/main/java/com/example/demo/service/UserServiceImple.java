@@ -11,7 +11,7 @@ import com.example.demo.model.User;
 
 
 @Service
-public class UserServiceImple implements userservice {
+public class UserServiceImple implements UserService {
 	private final Map<Integer ,User> users=new HashMap<>();
 	
     public UserServiceImple() {
