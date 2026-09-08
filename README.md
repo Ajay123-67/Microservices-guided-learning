@@ -1,268 +1,257 @@
-# Microservices-guided-learning
-# Microservices Architecture: User Service and Order Service
-## Project Overview
-This project is developed using **Microservices Architecture** with two independent services:
-1. **User Service**
-2. **Order Service**
-Each service is responsible for a specific business capability and can be developed, deployed, and scaled independently
-# Architecture
+# Microservices Guided Learning
+
+## Overview
+
+This project demonstrates the development of a basic **Microservices Architecture** using Spring Boot.
+
+The project currently contains three services:
+
+* **User Service** – Manages user information.
+* **Order Service** – Manages order information and communicates with User Service.
+* **API Gateway** – Provides a single entry point for clients and routes requests to the appropriate microservice.
+
+## Architecture
+
+```text
                     Client
-                      │
-                      ▼
-              ┌───────────────┐
-              │  User Service │
-              └───────────────┘
-                      │
-                      │ User Information
-                      │
-                      ▼
-              ┌────────────────┐
-              │  Order Service │
-              └────────────────┘
-The application is divided into two services with clear responsibilities and boundaries.
-# User Service
-## Responsibility
-The **User Service** is responsible for managing user-related operations.
-Its responsibilities may include:
-* User Registration
-* User Login
-* User Management
-* User Profile Management
-* User Authentication
-* User Validation
-The User Service owns user-related business logic and data.
-User Service
-     │
-     ├── Controller
-     ├── Service
-     ├── Repository
-     ├── Entity
-     ├── DTO
-     └── Database
-#Order Service
-## Responsibility
-The **Order Service** is responsible for managing order-related operations.
-Its responsibilities may include:
-* Creating Orders
-* Retrieving Orders
-* Updating Order Status
-* Cancelling Orders
-* Order History
-* Order Management
-The Order Service owns order-related business logic and data.
-Order Service
-     │
-     ├── Controller
-     ├── Service
-     ├── Repository
-     ├── Entity
-     ├── DTO
-     └── Database
+                      |
+                      v
+               +--------------+
+               |  API Gateway |
+               |    :8080     |
+               +--------------+
+                 /          \
+                /            \
+               v              v
+      +---------------+   +---------------+
+      |  User Service |   | Order Service |
+      |     :8081     |   |     :8082     |
+      +---------------+   +---------------+
+                               |
+                               | REST API
+                               v
+                       +---------------+
+                       |  User Service |
+                       +---------------+
+```
 
-# Communication Between Services
+## Services
 
-The **Order Service** may need user information when processing an order.
+### 1. User Service
 
-Instead of directly accessing the User Service database, services communicate through APIs.
-Client
-   │
-   ▼
-Order Service
-   │
-   │ HTTP Request
-   ▼
-User Service
+**Port:** `8081`
+
+Responsible for managing user details.
+
+Example endpoint:
+
+```text
+GET /users/{id}
+```
+
 Example:
-Order Service
-      │
-      │ GET User Details
-      ▼
-User Service
-      │
-      ▼
-User Database
-This keeps the services independent.
-#  Service Boundaries
-A service boundary defines what responsibility belongs to each microservice.
-## User Service Boundary
-The User Service is responsible only for user-related functionality.
-User Service
-✓ User Registration
-✓ User Login
-✓ User Details
-✓ User Authentication
-✓ User Management
-The User Service should not contain order-related business logic.
-## Order Service Boundary
-The Order Service is responsible only for order-related functionality.
-Order Service
-✓ Create Order
-✓ Retrieve Order
-✓ Update Order
-✓ Cancel Order
-✓ Manage Order Status
-The Order Service should not manage user authentication or user profile logic.
-# Database Boundaries
-In a microservices architecture, each service should ideally manage its own database.
-User Service
-     │
-     ▼
-User Database
 
+```text
+GET http://localhost:8081/users/1
+```
 
-Order Service
-     │
-     ▼
-Order Database
-The Order Service should not directly access the User Service database.
+Response:
 
-❌ Incorrect:
-Order Service
-      │
-      ▼
-User Database
-✅ Correct:
-Order Service
-      │
-      │ API Request
-      ▼
-User Service
-      │
-      ▼
-User Database
-This principle is called **Database Per Service**.
-#  Monolithic Architecture
+```json
+{
+  "id": 1,
+  "name": "Ajay",
+  "email": "ajay@gmail.com"
+}
+```
 
-In a **Monolithic Architecture**, all modules are developed and deployed as a single application.
-For example
-Application
+### 2. Order Service
 
-├── User Module
-├── Order Module
-├── Controller
-├── Service
-└── Database
-All components run together as one application.
-# Microservices Architecture
+**Port:** `8082`
 
-In this project, the application is divided into separate services.
-Microservices System
+Responsible for managing orders.
 
-├── User Service
-│      └── User Database
+Example endpoint:
+
+```text
+GET /order/{id}
+```
+
+Example:
+
+```text
+GET http://localhost:8082/order/101
+```
+
+The Order Service communicates with the User Service to retrieve user information.
+
+### 3. API Gateway
+
+**Port:** `8080`
+
+The API Gateway acts as the single entry point for clients.
+
+Gateway routes:
+
+| Request     | Destination          |
+| ----------- | -------------------- |
+| `/users/**` | User Service `8081`  |
+| `/order/**` | Order Service `8082` |
+
+Example:
+
+```text
+GET http://localhost:8080/users/1
+```
+
+is routed to:
+
+```text
+http://localhost:8081/users/1
+```
+
+And:
+
+```text
+GET http://localhost:8080/order/101
+```
+
+is routed to:
+
+```text
+http://localhost:8082/order/101
+```
+
+## Technologies Used
+
+* Java 17+
+* Spring Boot
+* Spring Cloud Gateway
+* Spring Web / REST API
+* Maven
+* Git & GitHub
+
+## Project Structure
+
+```text
+microservices-guided-learning/
 │
-└── Order Service
-       └── Order Database
-Each service is independent and focuses on a specific business responsibility.
+├── Api-gateway/
+│   ├── src/
+│   ├── pom.xml
+│   └── application.yml
+│
+├── user-service/
+│   ├── src/
+│   └── pom.xml
+│
+├── order-service/
+│   ├── src/
+│   └── pom.xml
+│
+└── README.md
+```
 
-# Monolithic vs Microservices
+## Running the Project
 
-| Feature         | Monolithic Architecture  | Microservices Architecture                 |
-| --------------- | ------------------------ | ------------------------------------------ |
-| Application     | Single application       | Multiple independent services              |
-| Deployment      | Single deployment        | Each service can be deployed independently |
-| Codebase        | Usually one project      | Multiple projects                          |
-| Scaling         | Scale entire application | Scale individual services                  |
-| Database        | Usually shared           | Separate database per service              |
-| Communication   | Internal method calls    | REST APIs or messaging                     |
-| Complexity      | Lower                    | Higher                                     |
-| Fault Isolation | Limited                  | Better isolation                           |
+Start the services in the following order:
 
-# Benefits of Microservices
+### User Service
 
-## 1. Independent Development
+```text
+Port: 8081
+```
 
-The User Service and Order Service can be developed separately.
-Developer A → User Service
+### Order Service
 
-Developer B → Order Service
-## 2. Independent Deployment
+```text
+Port: 8082
+```
 
-Each service can be deployed separately.
-Update User Service
-       │
-       ▼
-Deploy User Service Only
+### API Gateway
 
-The Order Service does not need to be redeployed.
-## 3. Independent Scaling
+```text
+Port: 8080
+```
 
-If the Order Service receives more traffic, only that service can be scaled.
-High Order Traffic
-       │
-       ▼
-Scale Order Service
-## 4. Clear Business Responsibilities
+All three services should be running before testing the Gateway.
 
-Each service has a specific responsibility.
-User Service  → User Management
+## Testing
 
-Order Service → Order Management
-This makes the system easier to organize as the application grows.
-#  Microservices Trade-Offs
+### Direct User Service
 
-Microservices also introduce additional complexity.
+```powershell
+curl.exe http://localhost:8081/users/1
+```
 
-## 1. Network Communication
+### Direct Order Service
 
-Services communicate through the network.
-Order Service
-      │
-      │ HTTP Request
-      ▼
-User Service
-Network problems can cause:
+```powershell
+curl.exe http://localhost:8082/order/101
+```
 
-* Timeouts
-* Connection failures
-* Service unavailability
-## 2. Distributed System Complexity
-Unlike a monolithic application, multiple applications must be managed.
+### User Service Through Gateway
 
-For example:
-User Service
-     │
-     ├── Configuration
-     ├── Deployment
-     └── Database
+```powershell
+curl.exe http://localhost:8080/users/1
+```
 
+### Order Service Through Gateway
 
-Order Service
-     │
-     ├── Configuration
-     ├── Deployment
-     └── Database
+```powershell
+curl.exe http://localhost:8080/order/101
+```
 
-## 3. Data Consistency
-Each service manages its own data.
-Therefore, maintaining consistency between services can be more challenging than using a single shared database.
-## 4. Debugging Complexity
-A request may travel between multiple services.
-Client
-   │
-   ▼
-Order Service
-   │
-   ▼
-User Service
-Debugging requires tracking requests across services.
-# Why Microservices Were Used
-The application was divided into **User Service** and **Order Service** to demonstrate:
-* Separation of responsibilities
-* Independent services
-* Clear service boundaries
-* Service-to-service communication
-* Independent deployment
-* Independent scalability
-# Conclusion
-This project demonstrates a simple Microservices Architecture consisting of two independent services:
-User Service
-      +
-Order Service
-The **User Service** is responsible for user-related functionality, while the **Order Service** is responsible for order-related functionality.
+## Key Microservices Concepts
 
-This separation creates clear business boundaries and allows each service to evolve independently.
+### Service-to-Service Communication
 
-Although microservices provide benefits such as independent deployment and scalability, they also introduce challenges such as network communication, distributed system complexity, and data consistency.
+The Order Service communicates with the User Service through a REST API instead of directly accessing the User Service's data.
 
-> **The goal of this project is to demonstrate how a monolithic application can be separated into independent microservices with clearly defined responsibilities and boundaries.**
+### API Gateway
+
+The Gateway provides a single entry point for clients and forwards requests to the appropriate service.
+
+### Service Boundaries
+
+Each microservice has its own responsibility:
+
+* User Service → User management
+* Order Service → Order management
+* API Gateway → Request routing
+
+### Database Ownership
+
+Each service should own and manage its own data. Other services should access that data through APIs rather than directly accessing another service's database.
+
+## Current Progress
+
+* [x] User Service
+* [x] Order Service
+* [x] User Service API testing
+* [x] Order Service API testing
+* [x] Service-to-service communication
+* [x] API Gateway setup
+* [x] Gateway routing configuration
+* [x] Gateway request testing
+
+## Future Improvements
+
+The project can be extended with:
+
+* Service Discovery
+* Centralized Configuration
+* Payment Service
+* Authentication and Authorization
+* Resilience and fault tolerance
+* Distributed tracing
+* Centralized logging
+* Containerization using Docker
+
+## Author
+
+**Ajay**
+
+## Repository
+
+This project is maintained as part of the Microservices Guided Learning project.
