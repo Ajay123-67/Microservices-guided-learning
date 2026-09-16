@@ -1,6 +1,10 @@
 package com.example.demo.client;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.net.URI;
+import java.util.List;
+
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
@@ -13,22 +17,34 @@ import com.example.demo.exception.UserServiceUnavailableException;
 public class UserClient {
 
     private final RestClient restClient;
+    private final DiscoveryClient discoveryClient;
 
     public UserClient(
             RestClient.Builder builder,
-            @Value("${user.service.url}") String userServiceUrl) {
+            DiscoveryClient discoveryClient) {
 
-        this.restClient = builder
-                .baseUrl(userServiceUrl)
-                .build();
+        this.restClient = builder.build();
+        this.discoveryClient = discoveryClient;
     }
 
     public UserResponse getUserById(int userId) {
 
         try {
 
+            List<ServiceInstance> instances =
+                    discoveryClient.getInstances("USER_SERVICE");
+
+            if (instances == null || instances.isEmpty()) {
+                throw new UserServiceUnavailableException(
+                        "USER_SERVICE is not available in Eureka.");
+            }
+
+            ServiceInstance instance = instances.get(0);
+
+            URI userServiceUri = instance.getUri();
+
             return restClient.get()
-                    .uri("/users/{id}", userId)
+                    .uri(userServiceUri + "/users/{id}", userId)
                     .retrieve()
                     .onStatus(
                             status -> status.value() == 404,

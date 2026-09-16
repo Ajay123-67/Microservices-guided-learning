@@ -11,7 +11,7 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
 
     @Bean
-    public RestClient.Builder restclient() {
+    public RestClient.Builder restClientBuilder() {
 
         JdkClientHttpRequestFactory factory =
                 new JdkClientHttpRequestFactory();
