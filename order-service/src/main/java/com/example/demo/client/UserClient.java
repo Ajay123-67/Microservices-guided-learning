@@ -32,7 +32,7 @@ public class UserClient {
         try {
 
             List<ServiceInstance> instances =
-                    discoveryClient.getInstances("USER_SERVICE");
+                    discoveryClient.getInstances("USER-SERVICE");
 
             if (instances == null || instances.isEmpty()) {
                 throw new UserServiceUnavailableException(
