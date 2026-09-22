@@ -13,6 +13,9 @@ import com.example.demo.dto.UserResponse;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.exception.UserServiceUnavailableException;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+
 @Component
 public class UserClient {
 
@@ -27,7 +30,10 @@ public class UserClient {
         this.discoveryClient = discoveryClient;
     }
 
+    @Retry(name = "userService")
+    @CircuitBreaker(name = "userService", fallbackMethod = "userServiceFallback")
     public UserResponse getUserById(int userId) {
+    	
 
         try {
 
@@ -68,5 +74,11 @@ public class UserClient {
                     "User Service is currently unavailable. Please try again later."
             );
         }
+    }
+    private UserResponse userServiceFallback( int userId,Throwable ex) {
+
+        throw new UserServiceUnavailableException(
+                "User Service is currently unavailable. Please try again later."
+        );
     }
 }
