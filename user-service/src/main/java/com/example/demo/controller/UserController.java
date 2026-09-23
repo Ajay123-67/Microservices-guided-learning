@@ -24,6 +24,7 @@ public class UserController {
 	public ResponseEntity<UserResponse>getUserById(@PathVariable int id){
 		UserResponse user=userservice.getUserById(id);
 		return ResponseEntity.ok(user);
+		
 	}
 
 }

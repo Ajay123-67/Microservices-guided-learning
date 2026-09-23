@@ -13,6 +13,7 @@ import com.example.demo.dto.UserResponse;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.exception.UserServiceUnavailableException;
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 
@@ -32,6 +33,10 @@ public class UserClient {
 
     @Retry(name = "userService")
     @CircuitBreaker(name = "userService", fallbackMethod = "userServiceFallback")
+    @Bulkhead(
+            name = "userService",
+            type = Bulkhead.Type.SEMAPHORE
+    )
     public UserResponse getUserById(int userId) {
     	
 
