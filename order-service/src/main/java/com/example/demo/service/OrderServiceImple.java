@@ -4,28 +4,38 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.client.PaymentClient;
 import com.example.demo.client.UserClient;
+import com.example.demo.dto.CreateOrderRequest;
+import com.example.demo.dto.CreateOrderResponse;
+import com.example.demo.dto.OrderItemRequest;
 import com.example.demo.dto.OrderResponse;
 import com.example.demo.dto.UserResponse;
+import com.example.demo.entity.OrderEntity;
+import com.example.demo.entity.OrderItemEntity;
 import com.example.demo.exception.OrderNotFoundException;
 import com.example.demo.model.Order;
+import com.example.demo.repository.OrderRepository;
 
 @Service
 public class OrderServiceImple implements OrderService {
 
     private final UserClient userClient;
     private final PaymentClient paymentClient;
+    private final OrderRepository orderRepository;
 
     private final Map<Integer, Order> orders = new HashMap<>();
 
     public OrderServiceImple(
             UserClient userClient,
-            PaymentClient paymentClient) {
+            PaymentClient paymentClient,
+            OrderRepository orderRepository) {
 
         this.userClient = userClient;
         this.paymentClient = paymentClient;
+        this.orderRepository = orderRepository;
 
         orders.put(101, new Order(101, 1, "laptop", 1, 55000));
         orders.put(102, new Order(102, 2, "Mobiles", 4, 130000));
@@ -60,5 +70,38 @@ public class OrderServiceImple implements OrderService {
                 order.getQuality(),
                 order.getPrice(),
                 user);
+    }
+    @Override
+    @Transactional
+    public CreateOrderResponse createOrder(CreateOrderRequest request) {
+
+        // 1. Verify user
+        userClient.getUserById(request.getUserId());
+
+        // 2. Create order
+        OrderEntity order = new OrderEntity(
+                request.getUserId(),
+                "CREATED"
+        );
+
+        // 3. Save order
+        OrderEntity savedOrder = orderRepository.save(order);
+
+        // 4. Save order items
+        for (OrderItemRequest item : request.getItems()) {
+
+            OrderItemEntity orderItem = new OrderItemEntity(
+                    savedOrder,
+                    item.getProductId(),
+                    item.getQuantity()
+            );
+
+            savedOrder.getItems().add(orderItem);
+        }
+        // 5. Return generated order ID
+        return new CreateOrderResponse(
+                savedOrder.getId(),
+                "CREATED"
+        );
     }
 }
