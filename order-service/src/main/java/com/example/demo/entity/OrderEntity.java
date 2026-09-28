@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class OrderEntity {
     private Integer userId;
 
     private String status;
+    private BigDecimal totalAmount;
 
     @OneToMany(
             mappedBy = "order",
@@ -60,5 +62,12 @@ public class OrderEntity {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
     }
 }

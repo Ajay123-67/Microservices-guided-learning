@@ -1,8 +1,12 @@
 package com.example.demo.service;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,8 @@ public class OrderServiceImple implements OrderService {
     private final UserClient userClient;
     private final PaymentClient paymentClient;
     private final OrderRepository orderRepository;
+    private static final Logger log =
+            LoggerFactory.getLogger(OrderServiceImple.class);
 
     private final Map<Integer, Order> orders = new HashMap<>();
 
@@ -58,10 +64,7 @@ public class OrderServiceImple implements OrderService {
                 userClient.getUserById(order.getUserId());
 
         // Call Payment Service
-        String paymentResponse =
-                paymentClient.makePayment();
-
-        System.out.println("Payment Response: " + paymentResponse);
+        
 
         return new OrderResponse(
                 order.getId(),
@@ -85,6 +88,7 @@ public class OrderServiceImple implements OrderService {
         );
 
         // 3. Save order
+        // We need the generated order ID before calling Payment Service.
         OrderEntity savedOrder = orderRepository.save(order);
 
         // 4. Save order items
@@ -98,7 +102,18 @@ public class OrderServiceImple implements OrderService {
 
             savedOrder.getItems().add(orderItem);
         }
-        // 5. Return generated order ID
+
+        // 5. Call Payment Service
+        String paymentResponse = paymentClient.makePayment(
+                savedOrder.getId().longValue(),
+                request.getTotalAmount()
+        );
+
+        log.info("Correlation ID: {} | Payment Response: {}",
+                MDC.get("X-Correlation-ID"),
+                paymentResponse);
+
+        // 6. Return order ID
         return new CreateOrderResponse(
                 savedOrder.getId(),
                 "CREATED"

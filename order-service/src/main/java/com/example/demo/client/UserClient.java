@@ -3,6 +3,7 @@ package com.example.demo.client;
 import java.net.URI;
 import java.util.List;
 
+import org.slf4j.MDC;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Component;
@@ -56,6 +57,7 @@ public class UserClient {
 
             return restClient.get()
                     .uri(userServiceUri + "/users/{id}", userId)
+                    .header("X-Correlation-ID", MDC.get("X-Correlation-ID"))
                     .retrieve()
                     .onStatus(
                             status -> status.value() == 404,

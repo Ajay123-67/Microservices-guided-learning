@@ -1,5 +1,8 @@
 
 package com.example.demo.client;
+
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -34,12 +37,16 @@ public class PaymentClient {
             name = "paymentService",
             fallbackMethod = "paymentFallback"
     )
-    public String makePayment() {
+    public String makePayment(Long orderId, BigDecimal amount) {
 
         try {
 
             return restClient.post()
-                    .uri("/payments")
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/payments")
+                            .queryParam("orderId", orderId)
+                            .queryParam("amount", amount)
+                            .build())
                     .retrieve()
                     .onStatus(
                             status -> status.is5xxServerError(),

@@ -3,6 +3,9 @@ package com.example.demo.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.UserResponse;
@@ -13,6 +16,8 @@ import com.example.demo.model.User;
 @Service
 public class UserServiceImple implements UserService {
 	private final Map<Integer ,User> users=new HashMap<>();
+	private static final Logger log =
+	        LoggerFactory.getLogger(UserService.class);
 	
     public UserServiceImple() {
     	users.put(1, new User(1,"Ajay","ajay@gmail.com"));
@@ -23,6 +28,9 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public UserResponse getUserById(int id) {
+		log.info("Correlation ID: {} | Getting user with id: {}",
+		        MDC.get("X-Correlation-ID"),
+		        id);
 		User user=users.get(id);
 		
 		if(user==null) {
